@@ -10,4 +10,4 @@ def Find_Eng_Name(name):
     english_ind = html.find("Official English Name:")
     english_ind_start=english_ind+66
     english_ind=html[english_ind_start:].find('<')
-    return html[english_ind_start:english_ind_start+english_ind]
+    return html[english_ind_start:english_ind_start+english_ind
