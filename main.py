@@ -1,8 +1,11 @@
 from asyncio.windows_events import NULL
 from urllib.request import urlopen
+from bs4 import BeautifulSoup
+from PIL import ImageTk, Image
 import tkinter as tk
 from functools import partial
 import os
+import io
 
 window = tk.Tk()
 window.geometry("600x400")
@@ -33,6 +36,19 @@ def FindDevilFruit(name):
     else:
         return "No Devil Fruit"
 
+#Gets image of character from website if not in database and saves
+def FindImage(name):
+    url=url_base+'/'+name
+    htmldata = urlopen(url)
+    soup=BeautifulSoup(htmldata,'html.parser')
+    images=soup.find_all('img')
+    for item in images:
+        if "Anime" in item['src'] and "Post" in item['src']:
+            return item['src']
+    for item in images:
+        if "Anime" in item['src']:
+            return item['src']
+
 #searches for character on button press
 def CharacterSearch():
     for widget in window.winfo_children():
@@ -41,7 +57,14 @@ def CharacterSearch():
     for widget in window.winfo_children():
         widget.destroy()
     nameLabel=tk.Label(text="Name: "+FindEngName(name)).pack()
-    devilLabel = tk.Label(text="Devil Fruit: "+FindDevilFruit(name)).pack()
+    raw_data=urlopen(FindImage(name)).read()
+    im=Image.open(io.BytesIO(raw_data))
+    im=im.resize([int(.5*s) for s in im.size])
+    im=ImageTk.PhotoImage(im)
+    picture=tk.Label(image=im)
+    picture.image = im
+    picture.pack()
+    devilLabel = tk.Label(text="Devil Fruit: "+FindDevilFruit(name),).pack()
     menuButton = tk.Button(text="New Search",command=MainPage).pack()
 
 #setup main gui page
