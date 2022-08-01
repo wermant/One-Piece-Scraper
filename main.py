@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 from urllib.request import urlopen
+from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from PIL import ImageTk, Image
 import tkinter as tk
@@ -20,6 +21,18 @@ def FindEngName(name):
     english_ind_start=english_ind+66
     english_ind=html[english_ind_start:].find('<')
     return html[english_ind_start:english_ind_start+english_ind]
+
+def FindBounty(name):
+    page=urlopen(url_base+'/'+name)
+    html_bytes=page.read()
+    html=html_bytes.decode('utf8')
+    bounty_ind = html.find('key="Beli.png"')
+    if bounty_ind != -1:
+        bounty_ind_start=html[bounty_ind:].find("</span>")+bounty_ind+7
+        bounty_end = html[bounty_ind_start:].find("<")+bounty_ind_start
+        return html[bounty_ind_start:bounty_end]
+    else:
+        return "No Bounty"
 
 #finds the devil fruit of a character if known
 def FindDevilFruit(name):
@@ -54,18 +67,35 @@ def CharacterSearch():
     for widget in window.winfo_children():
         if widget.winfo_class()=='Entry':
             name=widget.get()
+
+    try:
+        urlopen(url_base+"/"+name)
+    except HTTPError as err:
+        if err.code == 404:
+            err_label = tk.Label(text="Character not found, please try different\nspelling or new character").pack()
+            return
+    
     for widget in window.winfo_children():
         widget.destroy()
-    nameLabel=tk.Label(text="Name: "+FindEngName(name)).pack()
+    
+    FindBounty(name)
+    
+    #gets and adds image to frame
     raw_data=urlopen(FindImage(name)).read()
     im=Image.open(io.BytesIO(raw_data))
-    im=im.resize([int(.5*s) for s in im.size])
+    im=im.resize([int(im.size[0]*.6),int(im.size[1]*.75)])
     im=ImageTk.PhotoImage(im)
     picture=tk.Label(image=im)
     picture.image = im
     picture.pack()
-    devilLabel = tk.Label(text="Devil Fruit: "+FindDevilFruit(name),).pack()
+    picture.place(x=0,y=0)
+
+    #gets and adds text info to frame
+    nameLabel=tk.Label(text="Name: "+FindEngName(name)).pack()
+    devilLabel = tk.Label(text="Devil Fruit: "+FindDevilFruit(name)).pack()
+    bountyLabel = tk.Label(text="Bounty: "+FindBounty(name)).pack()
     menuButton = tk.Button(text="New Search",command=MainPage).pack()
+
 
 #setup main gui page
 def MainPage():
