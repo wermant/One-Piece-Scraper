@@ -68,22 +68,22 @@ def CharacterSearch():
         if widget.winfo_class()=='Entry':
             name=widget.get()
 
+    #checks if character is valid to search for
     try:
         urlopen(url_base+"/"+name)
     except HTTPError as err:
         if err.code == 404:
-            err_label = tk.Label(text="Character not found, please try different\nspelling or new character").pack()
+            err_label = tk.Label(text="Character not found, please try different\nspelling or new character",font=25).pack()
             return
     
     for widget in window.winfo_children():
         widget.destroy()
     
-    FindBounty(name)
-    
     #gets and adds image to frame
     raw_data=urlopen(FindImage(name)).read()
     im=Image.open(io.BytesIO(raw_data))
-    im=im.resize([int(im.size[0]*.6),int(im.size[1]*.75)])
+    im=im.resize([int(im.size[0]*.75),int(im.size[1]*.75)])
+    width=im.size[0]
     im=ImageTk.PhotoImage(im)
     picture=tk.Label(image=im)
     picture.image = im
@@ -91,10 +91,18 @@ def CharacterSearch():
     picture.place(x=0,y=0)
 
     #gets and adds text info to frame
-    nameLabel=tk.Label(text="Name: "+FindEngName(name)).pack()
-    devilLabel = tk.Label(text="Devil Fruit: "+FindDevilFruit(name)).pack()
-    bountyLabel = tk.Label(text="Bounty: "+FindBounty(name)).pack()
-    menuButton = tk.Button(text="New Search",command=MainPage).pack()
+    nameLabel=tk.Label(text="Name: "+FindEngName(name),font=30)
+    nameLabel.pack()
+    nameLabel.place(x=width+5,y=0)
+    devilLabel = tk.Label(text="Devil Fruit: "+FindDevilFruit(name),font=30)
+    devilLabel.pack()
+    devilLabel.place(x=width+5,y=50)
+    bountyLabel = tk.Label(text="Bounty: "+FindBounty(name),font=30)
+    bountyLabel.pack()
+    bountyLabel.place(x=width+5,y=100)
+    menuButton = tk.Button(text="New Search",command=MainPage)
+    menuButton.pack()
+    menuButton.place(x=width+5,y=150)
 
 
 #setup main gui page
@@ -102,7 +110,7 @@ def MainPage():
     for widget in window.winfo_children():
         widget.destroy()
     greeting = tk.Label(text="Welcome to the One Piece Web Scraper.", font=30)
-    instructions= tk.Label(text="\n\nInsert a characters name and find some\ngeneral info on them in seconds.\n(Please replace spaces with an underscore)\n\n",font=25)
+    instructions= tk.Label(text="\n\nInsert a characters first name and find some\ngeneral info on them in seconds.\n(Please replace spaces with an underscore)\n\n",font=25)
     namebox=tk.Entry(bg="gray",bd=6)
     searchButton = tk.Button(text="Search",command=CharacterSearch)
     greeting.pack()
