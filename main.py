@@ -94,12 +94,15 @@ def CharacterSearch():
     nameLabel=tk.Label(text="Name: "+FindEngName(name),font=30)
     nameLabel.pack()
     nameLabel.place(x=width+5,y=0)
+
     devilLabel = tk.Label(text="Devil Fruit: "+FindDevilFruit(name),font=30)
     devilLabel.pack()
     devilLabel.place(x=width+5,y=50)
+
     bountyLabel = tk.Label(text="Bounty: "+FindBounty(name),font=30)
     bountyLabel.pack()
     bountyLabel.place(x=width+5,y=100)
+    
     menuButton = tk.Button(text="New Search",command=MainPage)
     menuButton.pack()
     menuButton.place(x=width+5,y=150)
