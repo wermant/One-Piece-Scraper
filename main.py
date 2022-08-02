@@ -26,11 +26,12 @@ def FindBounty(name):
     page=urlopen(url_base+'/'+name)
     html_bytes=page.read()
     html=html_bytes.decode('utf8')
-    bounty_ind = html.find('key="Beli.png"')
-    if bounty_ind != -1:
-        bounty_ind_start=html[bounty_ind:].find("</span>")+bounty_ind+7
-        bounty_end = html[bounty_ind_start:].find("<")+bounty_ind_start
-        return html[bounty_ind_start:bounty_end]
+    if html.find('source="Bounty"')!=-1:
+        bounty_ind = html.find('key="Beli.png"')
+        if bounty_ind != -1:
+            bounty_ind_start=html[bounty_ind:].find("</span>")+bounty_ind+7
+            bounty_end = html[bounty_ind_start:].find("<")+bounty_ind_start
+            return html[bounty_ind_start:bounty_end]
     else:
         return "No Bounty"
 
@@ -49,7 +50,7 @@ def FindDevilFruit(name):
     else:
         return "No Devil Fruit"
 
-#Gets image of character from website if not in database and saves
+#Gets image of character from website
 def FindImage(name):
     url=url_base+'/'+name
     htmldata = urlopen(url)
@@ -61,6 +62,17 @@ def FindImage(name):
     for item in images:
         if "Anime" in item['src']:
             return item['src']
+
+#Gets characters group affiliation if known
+def FindAff(name):
+    page=urlopen(url_base+'/'+name)
+    html_bytes=page.read()
+    html=html_bytes.decode('utf8')
+    affind = html.find("Affiliations:")
+    affind = html[affind:].find("<a ")+affind
+    affind_start=html[affind:].find(">")+1+affind
+    affind_end=html[affind_start:].find("<")+affind_start
+    return html[affind_start:affind_end]
 
 #searches for character on button press
 def CharacterSearch():
@@ -95,17 +107,21 @@ def CharacterSearch():
     nameLabel.pack()
     nameLabel.place(x=width+5,y=0)
 
+    affLabel = tk.Label(text="Affilation: "+FindAff(name),font=30)
+    affLabel.pack()
+    affLabel.place(x=width+5,y=50)
+
     devilLabel = tk.Label(text="Devil Fruit: "+FindDevilFruit(name),font=30)
     devilLabel.pack()
-    devilLabel.place(x=width+5,y=50)
+    devilLabel.place(x=width+5,y=100)
 
     bountyLabel = tk.Label(text="Bounty: "+FindBounty(name),font=30)
     bountyLabel.pack()
-    bountyLabel.place(x=width+5,y=100)
+    bountyLabel.place(x=width+5,y=150)
     
     menuButton = tk.Button(text="New Search",command=MainPage)
     menuButton.pack()
-    menuButton.place(x=width+5,y=150)
+    menuButton.place(x=width+5,y=200)
 
 
 #setup main gui page
