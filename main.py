@@ -26,7 +26,7 @@ def FindBounty(name):
     page=urlopen(url_base+'/'+name)
     html_bytes=page.read()
     html=html_bytes.decode('utf8')
-    if html.find('source="Bounty"')!=-1:
+    if html.find('href="/wiki/Bounties"')!=-1:
         bounty_ind = html.find('key="Beli.png"')
         if bounty_ind != -1:
             bounty_ind_start=html[bounty_ind:].find("</span>")+bounty_ind+7
